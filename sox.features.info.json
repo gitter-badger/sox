@@ -1,4 +1,5 @@
 {
+    "url": "https://rawgit.com/soscripted/sox/repo-system/sox.helpers.js",
     "all": {
         "Appearance": {
             "grayOutVotes": "Gray out deleted votes",

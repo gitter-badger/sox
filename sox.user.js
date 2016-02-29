@@ -48,6 +48,43 @@
         return JSON.parse(GM_getValue(SOX_SETTINGS));
     }
 
+    function getRepos() {
+        var repos = GM_getValue('REPOS');
+        return repos ? JSON.parse(repos) : [];
+    }
+
+    function getFiles() {
+        var files = GM_getValue('FILES');
+        return files ? JSON.parse(files) : [];
+    }
+
+    function getFile() {
+        var file = GM_getValue(name);
+        return file || '';
+    }
+
+    function updateRepos() { //TODO: $.get is synchronous?
+        repos.forEach(function(repo) {
+            var version = $.get(repo.url + 'version.txt');
+            if (version > repo.version) {
+                repo.files.forEach(function(file) {
+                    GM_setValue(repo.name + '.' + file, $.get(file));
+                });
+            }
+        });
+    }
+
+    function loadFiles() {
+        var files = getFiles();
+        files.forEach(function(file) {
+            $('<script/>', {
+                text: getFile(file) //TODO: text?
+            }).appendTo('head');
+        });
+    }
+
+//TODO: add file/repo URL via drop, overwrite confirmation
+
     function save(options) {
         var prev = isAvailable() ? getSettings() : {},
             newOptions = $.extend(prev, options);
@@ -55,7 +92,7 @@
         console.log('SOX settings saved: ' + newOptions);
     }
 
-    function addFeatures(features) {
+    function addFeatures(features, category) {
         for (var feature in features) {
             var $div = $('<div/>'),
                 $label = $('<label/>'),
@@ -67,17 +104,19 @@
             $div.append($label);
             $label.append($input);
             $input.after(features[feature]);
-            $soxSettingsDialogFeatures.append($div);
+            $('.after-sox-' + category + '-category').before($div);
         }
     }
 
     function addCategory(name) {
-        var id = 'sox-' + name + '-category';
+        var id = 'sox-' + name + '-category',
+            class = 'after-' + $('.sox-settings-category:last').attr('class').split(' ')[1]; //TODO: better
         if  ($('#' + id).length) {
             return;
         }
         var $div = $('<div/>', {
                 id: id
+                class: 'sox-settings-category ' + class
             }),
             $h3 = $('<h3/>', {
                 text: name
@@ -95,11 +134,11 @@
                 } else {
                     for (var category in info.all) {
                         addCategory(category);
-                        addFeatures(info.all[category]);
+                        addFeatures(info.all[category], category);
                     }
                     for (category in info[site]) { //TODO: site
                         addCategory(category);
-                        addFeatures(info[site][category]);
+                        addFeatures(info[site][category], category);
                     }
                 }
             });
@@ -169,8 +208,8 @@
         // check if settings exist and execute desired functions
         if (isAvailable()) {
             var extras = getSettings();
+            // TODO: cache files, other stuff, if $.get(repoURL + 'version.txt') >  repoVersion
             for (var i = 0; i < extras.length; ++i) {
-                //TODO: weird ++i and i++ in catch
                 $soxSettingsDialogFeatures.find('#' + extras[i]).prop('checked', true);
                 try {
                     features[extras[i]](); //Call the functions that were chosen
