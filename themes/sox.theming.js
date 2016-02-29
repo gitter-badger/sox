@@ -57,36 +57,34 @@ var theming = function() {
         });
     }
 
-    $('body').append($('<div/>', {
-        'id': 'upload'
+    $('<div/>', {
+        id: 'upload'
     }).css({
-        'position': 'absolute',
+        position: 'absolute',
         'z-index': '10',
-        'height': '100%',
-        'width': '100%',
-        'background': 'rgba(255, 255, 255, 0.75)',
-        'display': 'none',
-        'top': '0',
-        'margin': '10px',
-        'border': 'dashed 10px #888'
-    }));
+        height: '-moz-available', //TODO: compat. also, i broke it
+        width: '-moz-available',
+        background: 'rgba(255, 255, 255, 0.75)',
+        display: 'none',
+        top: '0',
+        margin: '10px',
+        border: 'dashed 10px #888'
+    }).appendTo('body');
 
     //Quick theme changer
     $('html').on('dragenter', function(e) {
         e.preventDefault();
-        e.stopPropagation();
         $('#upload').show();
     });
-    $('html').on('dragleave', function(e) {
+    $('#upload').on('dragleave', function(e) {
         e.preventDefault();
-        e.stopPropagation();
         $('#upload').hide();
     });
-    $('html').on('drop', function(e) { //TODO: fix this and get file name - if file:// + image upload
-        e.preventDefault();
-        e.stopPropagation();
-        $('#upload').hide();
+    $('html').on('drop', function(e, data) { //TODO: fix this and get file name - if file:// + image upload
         console.log(e);
+        console.log(data);
+        e.preventDefault();
+        $('#upload').hide();
     });
 
     //TODO: fix uploading, detect filetype then conditionally show - if (chat && (extension === 'sox.css' || extension === 'sox.theme.js' || extension === 'png' || extension === 'jpg') {$('#upload').show();}
