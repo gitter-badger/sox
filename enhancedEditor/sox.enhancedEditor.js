@@ -268,8 +268,8 @@ var enhancedEditor = {
     autoCorrect: function(s) {
         var oldVal = $(s).val();
         var newVal = oldVal.replace(/\bi\b/g, "I") //capitalise 'I'
-        .replace(/\.\.\.*/gi, "...") //truncate elipses
-        .replace(/(?!\.\.\.*)([,.!?;:])(\S)/g, "$1 $2") //add space after punctuation
+        .replace(/\.{3,}/gi, "...") //truncate ellipses
+        .replace(/(\.{3,})?([,.!?;:])(\S)/g, "$1 $2") //add space after punctuation
         .replace(/\s(\?|!)/g, "$1") //remove space before !/?
         .replace(/\bwud\b/gi, "would") //wud->would
         .replace(/\bcud\b/gi, "could") //cud->could

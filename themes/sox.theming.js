@@ -56,37 +56,48 @@ var theming = function() {
             if(FAVICONS[site]) el.attr('src', FAVICONS[site]);
         });
     }
-
-    $('<div/>', {
-        id: 'upload'
+    ($('<div/>', {
+        class: 'upload'
+    }).css({
+        'z-index': '1002',
+        position: 'fixed',
+        display: 'none',
+        top: '0',
+        left: '0',
+        bottom: '0',
+        right: '0',
+        border: 'solid 10px rgba(255, 255, 255, 0.75)',
+        background: 'rgba(0, 0, 0, 0)'
+    })).append($('<div/>', {
+        class: 'upload'
     }).css({
         position: 'absolute',
-        'z-index': '10',
-        height: '-moz-available', //TODO: compat. also, i broke it
-        width: '-moz-available',
+        'z-index': '1003',
         background: 'rgba(255, 255, 255, 0.75)',
         display: 'none',
         top: '0',
-        margin: '10px',
+        left: '0',
+        bottom: '0',
+        right: '0',
         border: 'dashed 10px #888'
-    }).appendTo('body');
+    })).appendTo('body');
 
     //Quick theme changer
     $('html').on('dragenter', function(e) {
         e.preventDefault();
-        $('#upload').show();
+        $('.upload').css({
+            display: 'block'
+        });
     });
-    $('#upload').on('dragleave', function(e) {
+    $('.upload').on('dragleave', function(e) {
         e.preventDefault();
-        $('#upload').hide();
+        $('.upload').hide();
     });
-    $('html').on('drop', function(e, data) { //TODO: fix this and get file name - if file:// + image upload
-        console.log(e);
-        console.log(data);
+    $('html').on('drop', function(e) { //TODO: fix this and get file name - if file:// + image upload
         e.preventDefault();
-        $('#upload').hide();
+        $('.upload').hide();
+        console.log(e.dataTransfer.getData('text/html'));
     });
-
     //TODO: fix uploading, detect filetype then conditionally show - if (chat && (extension === 'sox.css' || extension === 'sox.theme.js' || extension === 'png' || extension === 'jpg') {$('#upload').show();}
     // then set url: GM_setValue(siteName_siteType_(css|js), url)
     //TODO: support modifying html + js
